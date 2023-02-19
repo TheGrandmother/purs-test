@@ -1,73 +1,71 @@
 module Main where
 
+import Prelude
+
+import Data.Maybe (Maybe(..))
 import Effect (Effect)
+import Effect.Class (class MonadEffect)
+import Effect.Random (random)
 import El as El
 import Halogen as H
-import Halogen.Aff as HA
+import Halogen.Aff (awaitBody, runHalogenAff)
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.VDom.Driver (runUI)
-import Prelude
-import Data.Maybe
 
 main :: Effect Unit
-main =
-  HA.runHalogenAff do
-    body <- HA.awaitBody
-    runUI component unit body
+main = runHalogenAff do
+  body <- awaitBody
+  core <- H.liftEffect El.createCore
+  runUI component core body
 
-data Action
-  = Increment
-  | Decrement
-  | Plej
-  | Init
+type Params = {gate :: Number, freq :: Number}
+type State = {core :: Maybe El.Core, params :: Params}
 
-type State
-  = { val :: Int, core :: El.Core, ctx :: El.Ctx }
+data Action = Regenerate | Play Number
 
--- otto :: Effect Unit
--- otto = do
---   core <- kuken
---   _ <- El.onCoreLoad core El.flerp
---   pure unit
---   where
---   kuken :: Effect El.Core
---   kuken = Effect El.createCore
-component :: forall output a b c. H.Component output a b c
+component :: forall query output m. MonadEffect m => H.Component query El.Core output m
 component =
   H.mkComponent
     { initialState
     , render
     , eval: H.mkEval $ H.defaultEval { handleAction = handleAction }
     }
-  where
-  initialState :: forall t. t -> State
-  initialState _ = { val: 0, core: El.createCore, ctx: El.createCtx }
 
-  render state =
-    HH.div_
-      [ HH.button [ HE.onClick \_ -> Decrement ] [ HH.text "-" ]
-      , HH.div_ [ HH.text $ show state ]
-      , HH.button [ HE.onClick \_ -> Increment ] [ HH.text "+" ]
-      , HH.button [ HE.onClick \_ -> Plej ] [ HH.text "plej" ]
-      ]
+initialState :: El.Core -> State
+initialState core = {core : Just core, params : {gate : 0.0, freq : 0.0}}
 
-  play :: State -> State
-  play state = do
-    let
-      _ = El.play state.core state.ctx
-    state
+render :: forall m. State -> H.ComponentHTML Action () m
+render state = do
+  let value = "Freq: " <> show state.params.freq <> " g8: " <> show state.params.gate
+  HH.div_
+    [ HH.p_
+        [ HH.text ("Current value: " <> value) ]
+    , HH.button
+        [ HE.onClick \_ -> Regenerate ]
+        [ HH.text "Fuck it up" ]
+    , HH.p_ []
+    , HH.button
+        [ HE.onMouseDown \_ -> Play 1.0,  HE.onMouseUp \_ -> Play 0.00]
+        [ HH.text "Play" ]
+    ]
 
-  handleAction = case _ of
-    Increment -> H.modify_ \state -> state { val = state.val + 1 }
-    Decrement -> H.modify_ \state -> state { val = state.val - 1 }
-    Plej -> H.modify_ play
-    Init ->
-      H.modify \state -> do
-        _ <- H.liftEffect $ El.onCoreLoad El.createCore El.flerp
-        H.modify_ \state -> state { val = state.val - 1 }
 
--- Init ->
---   H.modify \state -> do
---     _ <- El.onCoreLoad state.core El.flerp
---     pure state
+handleAction :: forall output m. MonadEffect m => Action -> H.HalogenM State Action () output m Unit
+handleAction = case _ of
+  Regenerate -> do
+    newNumber <- H.liftEffect random
+    H.modify_ \state -> state {params = (state.params {freq = newNumber})}
+  Play gate -> do
+     fuckall <- H.gets _.core
+     case fuckall of
+      Nothing -> H.modify_ \state -> state
+      Just core -> do
+        params <- H.gets _.params
+        core2 <- H.liftEffect $ El.renderMono core (
+          let
+            signal = (El.cycle (El.const "freq" (440.0+params.freq*440.0)))
+            env = (El.meter "kuken" (El.adsr 1.5 0.1 0.7 3.0 (El.const "gate" (gate))))
+          in El.mul signal env
+        )
+        H.modify_ \state -> state {core = Just core2, params = (state.params {gate = gate})}
