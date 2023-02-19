@@ -46,7 +46,7 @@ render state = do
         [ HH.text "Fuck it up" ]
     , HH.p_ []
     , HH.button
-        [ HE.onMouseDown \_ -> Play 1.0,  HE.onMouseUp \_ -> Play 0.00]
+        [ HE.onMouseDown \_ -> Play 1.0,  HE.onMouseUp \_ -> Play 0.00, HE.onTouchStart \_ -> Play 1.0, HE.onTouchEnd \_ -> Play 0.0]
         [ HH.text "Play" ]
     ]
 

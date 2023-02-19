@@ -5,8 +5,24 @@ export const createCore = () => {
   const ctx = new AudioContext()
   const core = new WebRenderer()
   window.core = core
+
+  const contextStarter = () => {
+    if (ctx.state === 'running') {
+      removeEventListener('mouseover', contextStarter)
+      removeEventListener('touchstart', contextStarter)
+      console.log('ctx resumed.')
+    } else {
+      ctx.resume()
+    }
+  }
+
+  addEventListener('mouseover', contextStarter)
+
+  addEventListener('touchstart', contextStarter)
+
+  core.on('load', () => {
+  })
   const start = async() => {
-    ctx.resume()
     const node = await core.initialize(ctx, {
       numberOfInputs: 0,
       numberOfOutputs: 1,

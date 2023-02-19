@@ -3779,8 +3779,20 @@
     const ctx = new AudioContext();
     const core = new o2();
     window.core = core;
+    const contextStarter = () => {
+      if (ctx.state === "running") {
+        removeEventListener("mouseover", contextStarter);
+        removeEventListener("touchstart", contextStarter);
+        console.log("ctx resumed.");
+      } else {
+        ctx.resume();
+      }
+    };
+    addEventListener("mouseover", contextStarter);
+    addEventListener("touchstart", contextStarter);
+    core.on("load", () => {
+    });
     const start2 = async () => {
-      ctx.resume();
       const node = await core.initialize(ctx, {
         numberOfInputs: 0,
         numberOfOutputs: 1,
@@ -3896,7 +3908,7 @@
       };
     };
   }
-  function addEventListener(type) {
+  function addEventListener2(type) {
     return function(listener) {
       return function(useCapture) {
         return function(target6) {
@@ -3907,7 +3919,7 @@
       };
     };
   }
-  function removeEventListener(type) {
+  function removeEventListener2(type) {
     return function(listener) {
       return function(useCapture) {
         return function(target6) {
@@ -4041,8 +4053,8 @@
         var listener = eventListener(function(v2) {
           return callback(new Right(unit));
         })();
-        addEventListener(domcontentloaded)(listener)(false)(et2)();
-        return effectCanceler(removeEventListener(domcontentloaded)(listener)(false)(et2));
+        addEventListener2(domcontentloaded)(listener)(false)(et2)();
+        return effectCanceler(removeEventListener2(domcontentloaded)(listener)(false)(et2));
       }
       ;
       callback(new Right(unit))();
@@ -5713,10 +5725,10 @@
       return el.hasAttribute(attr3);
     }
   }
-  function addEventListener2(ev, listener, el) {
+  function addEventListener3(ev, listener, el) {
     el.addEventListener(ev, listener, false);
   }
-  function removeEventListener2(ev, listener, el) {
+  function removeEventListener3(ev, listener, el) {
     el.removeEventListener(ev, listener, false);
   }
   var jsUndefined = void 0;
@@ -6252,7 +6264,7 @@
           ;
           if (v1 instanceof Handler) {
             var handler3 = unsafeLookup(v1.value0, prevEvents);
-            return removeEventListener2(v1.value0, fst(handler3), el);
+            return removeEventListener3(v1.value0, fst(handler3), el);
           }
           ;
           if (v1 instanceof Ref) {
@@ -6347,7 +6359,7 @@
               };
             })();
             pokeMutMap(v22.value0, new Tuple(listener, ref2), events);
-            addEventListener2(v22.value0, listener, el);
+            addEventListener3(v22.value0, listener, el);
             return v22;
           }
           ;
@@ -7405,6 +7417,7 @@
   var click2 = "click";
 
   // output/Halogen.HTML.Events/index.js
+  var touchHandler = unsafeCoerce2;
   var mouseHandler = unsafeCoerce2;
   var handler2 = function(et2) {
     return function(f2) {
@@ -7429,6 +7442,18 @@
     var $39 = handler2(mouseup);
     return function($40) {
       return $39(mouseHandler($40));
+    };
+  }();
+  var onTouchEnd = /* @__PURE__ */ function() {
+    var $43 = handler2("touchend");
+    return function($44) {
+      return $43(touchHandler($44));
+    };
+  }();
+  var onTouchStart = /* @__PURE__ */ function() {
+    var $51 = handler2("touchstart");
+    return function($52) {
+      return $51(touchHandler($52));
     };
   }();
 
@@ -8390,6 +8415,10 @@
       return new Play(1);
     }), onMouseUp(function(v2) {
       return new Play(0);
+    }), onTouchStart(function(v2) {
+      return new Play(1);
+    }), onTouchEnd(function(v2) {
+      return new Play(0);
     })])([text5("Play")])]);
   };
   var initialState = function(core) {
@@ -8407,27 +8436,27 @@
       if (v2 instanceof Regenerate) {
         return bind5(liftEffect12(random))(function(newNumber) {
           return modify_3(function(state3) {
-            var $30 = {};
-            for (var $31 in state3) {
-              if ({}.hasOwnProperty.call(state3, $31)) {
-                $30[$31] = state3[$31];
+            var $32 = {};
+            for (var $33 in state3) {
+              if ({}.hasOwnProperty.call(state3, $33)) {
+                $32[$33] = state3[$33];
               }
               ;
             }
             ;
-            $30.params = function() {
-              var $27 = {};
-              for (var $28 in state3.params) {
-                if ({}.hasOwnProperty.call(state3.params, $28)) {
-                  $27[$28] = state3["params"][$28];
+            $32.params = function() {
+              var $29 = {};
+              for (var $30 in state3.params) {
+                if ({}.hasOwnProperty.call(state3.params, $30)) {
+                  $29[$30] = state3["params"][$30];
                 }
                 ;
               }
               ;
-              $27.freq = newNumber;
-              return $27;
+              $29.freq = newNumber;
+              return $29;
             }();
-            return $30;
+            return $32;
           });
         });
       }
@@ -8452,28 +8481,28 @@
                 return mul2(signal)(env);
               }())))(function(core2) {
                 return modify_3(function(state3) {
-                  var $37 = {};
-                  for (var $38 in state3) {
-                    if ({}.hasOwnProperty.call(state3, $38)) {
-                      $37[$38] = state3[$38];
+                  var $39 = {};
+                  for (var $40 in state3) {
+                    if ({}.hasOwnProperty.call(state3, $40)) {
+                      $39[$40] = state3[$40];
                     }
                     ;
                   }
                   ;
-                  $37.core = new Just(core2);
-                  $37.params = function() {
-                    var $34 = {};
-                    for (var $35 in state3.params) {
-                      if ({}.hasOwnProperty.call(state3.params, $35)) {
-                        $34[$35] = state3["params"][$35];
+                  $39.core = new Just(core2);
+                  $39.params = function() {
+                    var $36 = {};
+                    for (var $37 in state3.params) {
+                      if ({}.hasOwnProperty.call(state3.params, $37)) {
+                        $36[$37] = state3["params"][$37];
                       }
                       ;
                     }
                     ;
-                    $34.gate = v2.value0;
-                    return $34;
+                    $36.gate = v2.value0;
+                    return $36;
                   }();
-                  return $37;
+                  return $39;
                 });
               });
             });
