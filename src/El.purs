@@ -25,6 +25,8 @@ module El
   , lowpass
   , blepsquare
   , delay
+  , ms2samps
+  , sampleRate
   ) where
 
 import Prelude
@@ -78,6 +80,8 @@ foreign import __sdelay :: forall p1 p2. Fn2 p1 p2 Node
 
 foreign import __tapIn :: forall p1. Fn1 p1 Node
 
+foreign import __ms2samps :: forall p1. Fn1 p1 Number
+
 foreign import __tapOut :: forall p1 p2. Fn2 p1 p2 Node
 
 foreign import __highpass :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
@@ -111,6 +115,9 @@ le p1 p2 = runFn2 __le p1 p2
 
 cycle :: forall p1. p1 -> Node
 cycle p = runFn1 __cycle p
+
+ms2samps :: forall p1. p1 -> Number
+ms2samps p = runFn1 __ms2samps p
 
 blepsquare :: forall p1. p1 -> Node
 blepsquare p = runFn1 __blepsquare p
