@@ -23,6 +23,7 @@ to generate this file without the comments in this block.
   , "numbers"
   , "prelude"
   , "random"
+  , "record"
   , "web-events"
   ]
 , packages = ./packages.dhall

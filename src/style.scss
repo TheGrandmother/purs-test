@@ -31,8 +31,28 @@ body {
   font-family: 'Courier New', monospace, bold
 }
 
+.controller-box {
+  margin-bottom: 10pt;
+  display: flex;
+  width: 400;
+  flex-direction: column;
+}
+
 .line-widget {
-  background: $black
+  background: $dark_cyan;
+}
+
+.slide-widget {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+
+  span {
+    align-self: self-end;
+    width: 5em;
+  }
+
 }
 
 
@@ -61,5 +81,5 @@ input[type="range"]::-webkit-slider-thumb {
 
    background-color: $fg;
    height: 1rem;
-   width: 1rem;
+   width: 0.5rem;
 }
