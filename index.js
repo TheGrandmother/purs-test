@@ -365,7 +365,7 @@
         }
         return this;
       };
-      function _listeners(target6, type, unwrap4) {
+      function _listeners(target6, type, unwrap5) {
         var events = target6._events;
         if (events === void 0)
           return [];
@@ -373,8 +373,8 @@
         if (evlistener === void 0)
           return [];
         if (typeof evlistener === "function")
-          return unwrap4 ? [evlistener.listener || evlistener] : [evlistener];
-        return unwrap4 ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
+          return unwrap5 ? [evlistener.listener || evlistener] : [evlistener];
+        return unwrap5 ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
       }
       EventEmitter.prototype.listeners = function listeners(type) {
         return _listeners(this, type, true);
@@ -929,14 +929,6 @@
       return state1(function(s) {
         var s$prime = f2(s);
         return new Tuple(s$prime, s$prime);
-      });
-    };
-  };
-  var gets = function(dictMonadState) {
-    var state1 = state(dictMonadState);
-    return function(f2) {
-      return state1(function(s) {
-        return new Tuple(f2(s), s);
       });
     };
   };
@@ -2094,6 +2086,22 @@
     return function(xs) {
       return append2([x])(xs);
     };
+  };
+
+  // output/Data.Number/foreign.js
+  var isFiniteImpl = isFinite;
+  function fromStringImpl(str, isFinite2, just, nothing) {
+    var num = parseFloat(str);
+    if (isFinite2(num)) {
+      return just(num);
+    } else {
+      return nothing;
+    }
+  }
+
+  // output/Data.Number/index.js
+  var fromString = function(str) {
+    return fromStringImpl(str, isFiniteImpl, Just.create, Nothing.value);
   };
 
   // output/Effect.Aff/foreign.js
@@ -4575,7 +4583,6 @@
   var __tapIn = (...props) => Eo.tapIn(...props);
   var __tapOut = (...props) => Eo.tapOut(...props);
   var __sm = (...props) => Eo.sm(...props);
-  var __blepsquare = (...props) => Eo.blepsquare(...props);
   var __cycle = (...props) => Eo.cycle(...props);
   var __phasor = (...props) => Eo.phasor(...props);
   var __le = (...props) => Eo.le(...props);
@@ -4585,22 +4592,6 @@
   // output/Data.Int/foreign.js
   var toNumber = function(n) {
     return n;
-  };
-
-  // output/Data.Number/foreign.js
-  var isFiniteImpl = isFinite;
-  function fromStringImpl(str, isFinite2, just, nothing) {
-    var num = parseFloat(str);
-    if (isFinite2(num)) {
-      return just(num);
-    } else {
-      return nothing;
-    }
-  }
-
-  // output/Data.Number/index.js
-  var fromString = function(str) {
-    return fromStringImpl(str, isFiniteImpl, Just.create, Nothing.value);
   };
 
   // output/El/index.js
@@ -4658,9 +4649,6 @@
         value: val
       });
     };
-  };
-  var blepsquare = function(p2) {
-    return __blepsquare(p2);
   };
   var add2 = function(p1) {
     return function(p2) {
@@ -8170,9 +8158,11 @@
   var onValueInput = /* @__PURE__ */ addForeignPropHandler(input)("value")(readString2);
 
   // output/Halogen.HTML.Properties/index.js
+  var unwrap3 = /* @__PURE__ */ unwrap();
   var prop2 = function(dictIsProp) {
     return prop(dictIsProp);
   };
+  var prop22 = /* @__PURE__ */ prop2(isPropString);
   var prop4 = /* @__PURE__ */ prop2(isPropNumber);
   var step4 = /* @__PURE__ */ prop2(isPropStepValue)("step");
   var type_18 = function(dictIsProp) {
@@ -8182,6 +8172,12 @@
     return prop2(dictIsProp)("value");
   };
   var max6 = /* @__PURE__ */ prop4("max");
+  var class_ = /* @__PURE__ */ function() {
+    var $36 = prop22("className");
+    return function($37) {
+      return $36(unwrap3($37));
+    };
+  }();
 
   // output/Control.Monad.Fork.Class/index.js
   var monadForkAff = {
@@ -8948,7 +8944,7 @@
   var $$void6 = /* @__PURE__ */ $$void(functorEffect);
   var pure8 = /* @__PURE__ */ pure(applicativeEffect);
   var traverse_6 = /* @__PURE__ */ traverse_(applicativeEffect)(foldableMaybe);
-  var unwrap3 = /* @__PURE__ */ unwrap();
+  var unwrap4 = /* @__PURE__ */ unwrap();
   var when3 = /* @__PURE__ */ when(applicativeEffect);
   var not2 = /* @__PURE__ */ not(/* @__PURE__ */ heytingAlgebraFunction(/* @__PURE__ */ heytingAlgebraFunction(heytingAlgebraBoolean)));
   var identity6 = /* @__PURE__ */ identity(categoryFn);
@@ -8993,7 +8989,7 @@
           return unit;
         };
         var buildWidget2 = function(spec) {
-          var buildThunk2 = buildThunk(unwrap3)(spec);
+          var buildThunk2 = buildThunk(unwrap4)(spec);
           var $lazy_patch = $runtime_lazy7("patch", "Halogen.VDom.Driver", function() {
             return function(st2, slot) {
               if (st2 instanceof Just) {
@@ -9166,7 +9162,7 @@
               };
             }
             ;
-            throw new Error("Failed pattern match at Synth (line 49, column 5 - line 49, column 41): " + [v1.constructor.name, v22.constructor.name, v3.constructor.name]);
+            throw new Error("Failed pattern match at Synth (line 54, column 3 - line 54, column 41): " + [v1.constructor.name, v22.constructor.name, v3.constructor.name]);
           };
         };
       };
@@ -9183,7 +9179,7 @@
         return newLines.value0;
       }
       ;
-      throw new Error("Failed pattern match at Synth (line 41, column 47 - line 43, column 18): " + [newLines.constructor.name]);
+      throw new Error("Failed pattern match at Synth (line 45, column 47 - line 47, column 18): " + [newLines.constructor.name]);
     };
   };
   var pwmTrain = function(freq) {
@@ -9191,12 +9187,14 @@
       return sm(le2(ramp(freq))(duty));
     };
   };
+  var pulseGen = function(pulseFreq) {
+    return function(freq) {
+      return mul2(cycle($$const2("os_f")(freq)))(pwmTrain(pulseFreq)(0.01));
+    };
+  };
   var mix = function(l) {
     var damp = 1 / toNumber(length(l));
     return mul2(damp)(foldl2(add2)($$const2("_")(0))(l));
-  };
-  var pulseGen = function(pulseFreq) {
-    return mul2(mix([cycle(880), mul2(0)(blepsquare(330))]))(pwmTrain(pulseFreq)(0.01));
   };
   var makeLine = function(t) {
     return {
@@ -9212,8 +9210,10 @@
     return delay($$const2(l.tag + "_t")(ms(l.delay * 100)))($$const2(l.tag + "_g")(l.gain))(tapIn2("balle"));
   };
   var pingu = function(lines) {
-    var pg = pulseGen(0.5);
-    return tapOut2("balle")(mix(cons(pg)(map19(delayLine)(lines))));
+    return function(freq) {
+      var pg = pulseGen(0.5)(freq);
+      return tapOut2("balle")(mix(cons(pg)(map19(delayLine)(lines))));
+    };
   };
 
   // output/Main/index.js
@@ -9221,22 +9221,11 @@
   var value13 = /* @__PURE__ */ value12(isPropString);
   var show3 = /* @__PURE__ */ show(showString);
   var show1 = /* @__PURE__ */ show(showNumber);
+  var modify_3 = /* @__PURE__ */ modify_(monadStateHalogenM);
   var bind6 = /* @__PURE__ */ bind(bindHalogenM);
   var modify5 = /* @__PURE__ */ modify(monadStateHalogenM);
-  var modify_3 = /* @__PURE__ */ modify_(monadStateHalogenM);
-  var gets2 = /* @__PURE__ */ gets(monadStateHalogenM);
   var bind15 = /* @__PURE__ */ bind(bindAff);
   var liftEffect7 = /* @__PURE__ */ liftEffect(monadEffectAff);
-  var Play = /* @__PURE__ */ function() {
-    function Play2(value0) {
-      this.value0 = value0;
-    }
-    ;
-    Play2.create = function(value0) {
-      return new Play2(value0);
-    };
-    return Play2;
-  }();
   var LineChange = /* @__PURE__ */ function() {
     function LineChange2(value0) {
       this.value0 = value0;
@@ -9247,91 +9236,119 @@
     };
     return LineChange2;
   }();
+  var FreqChange = /* @__PURE__ */ function() {
+    function FreqChange2(value0) {
+      this.value0 = value0;
+    }
+    ;
+    FreqChange2.create = function(value0) {
+      return new FreqChange2(value0);
+    };
+    return FreqChange2;
+  }();
   var render2 = function(state3) {
     var inputConfig = function(ef) {
       return [type_19(InputRange.value), value13("0.0"), max6(1), step4(new Step(1e-3)), onValueInput(ef)];
     };
     var lineWidget = function(no) {
       return function(spec) {
-        return div_([h4_([text5("Delay line " + show3(spec.tag))]), div2([])([input2(inputConfig(function(e) {
+        return div2([class_("line-widget")])([h4_([text5("Delay line " + show3(spec.tag))]), div2([])([input2(inputConfig(function(e) {
           return new LineChange(new LineEvent(no, Delay.value, e));
         })), text5("delay: " + (show1(spec.delay * 100) + "ms"))]), div2([])([input2(inputConfig(function(e) {
           return new LineChange(new LineEvent(no, Gain.value, e));
         })), text5("Gain: " + show1(spec.gain))])]);
       };
     };
-    return div_(mapWithIndex2(lineWidget)(state3.lines));
+    return div_([div_(mapWithIndex2(lineWidget)(state3.lines)), input2(inputConfig(function(e) {
+      return new FreqChange(e);
+    })), text5("Freq: " + (show1(state3.freq) + "hz"))]);
   };
   var initialState = function(core) {
     return {
       core,
       lines: [makeLine("a"), makeLine("b"), makeLine("c")],
-      gate: 0
+      gate: 0,
+      freq: 440
     };
   };
   var handleAction = function(dictMonadEffect) {
     var liftEffect12 = liftEffect(monadEffectHalogenM(dictMonadEffect));
     var playLines = function(state3) {
-      return renderMono(state3.core)(pingu(state3.lines));
+      return renderMono(state3.core)(pingu(state3.lines)(state3.freq));
     };
     return function(v2) {
-      if (v2 instanceof LineChange) {
-        return bind6(modify5(function(state3) {
-          var $27 = {};
-          for (var $28 in state3) {
-            if ({}.hasOwnProperty.call(state3, $28)) {
-              $27[$28] = state3[$28];
-            }
-            ;
-          }
-          ;
-          $27.lines = updateLines(v2.value0)(state3.lines);
-          return $27;
-        }))(function(state3) {
-          return bind6(liftEffect12(playLines(state3)))(function(core2) {
-            return modify_3(function(v1) {
-              var $30 = {};
-              for (var $31 in state3) {
-                if ({}.hasOwnProperty.call(state3, $31)) {
-                  $30[$31] = state3[$31];
-                }
-                ;
+      if (v2 instanceof FreqChange) {
+        var v1 = fromString(v2.value0);
+        if (v1 instanceof Nothing) {
+          return modify_3(function(state3) {
+            return state3;
+          });
+        }
+        ;
+        if (v1 instanceof Just) {
+          return bind6(modify5(function(state3) {
+            var $28 = {};
+            for (var $29 in state3) {
+              if ({}.hasOwnProperty.call(state3, $29)) {
+                $28[$29] = state3[$29];
               }
               ;
-              $30.core = core2;
-              return $30;
-            });
-          });
-        });
-      }
-      ;
-      if (v2 instanceof Play) {
-        return bind6(gets2(function(v1) {
-          return v1.lines;
-        }))(function(lines) {
-          return bind6(gets2(function(v1) {
-            return v1.core;
-          }))(function(core) {
-            return bind6(liftEffect12(renderMono(core)(pingu(lines))))(function(core2) {
-              return modify_3(function(state3) {
-                var $34 = {};
-                for (var $35 in state3) {
-                  if ({}.hasOwnProperty.call(state3, $35)) {
-                    $34[$35] = state3[$35];
+            }
+            ;
+            $28.freq = v1.value0 * 880;
+            return $28;
+          }))(function(state3) {
+            return bind6(liftEffect12(playLines(state3)))(function(core2) {
+              return modify_3(function(v22) {
+                var $31 = {};
+                for (var $32 in state3) {
+                  if ({}.hasOwnProperty.call(state3, $32)) {
+                    $31[$32] = state3[$32];
                   }
                   ;
                 }
                 ;
-                $34.core = core2;
-                $34.gate = v2.value0;
-                return $34;
+                $31.core = core2;
+                return $31;
               });
+            });
+          });
+        }
+        ;
+        throw new Error("Failed pattern match at Main (line 70, column 5 - line 75, column 47): " + [v1.constructor.name]);
+      }
+      ;
+      if (v2 instanceof LineChange) {
+        return bind6(modify5(function(state3) {
+          var $36 = {};
+          for (var $37 in state3) {
+            if ({}.hasOwnProperty.call(state3, $37)) {
+              $36[$37] = state3[$37];
+            }
+            ;
+          }
+          ;
+          $36.lines = updateLines(v2.value0)(state3.lines);
+          return $36;
+        }))(function(state3) {
+          return bind6(liftEffect12(playLines(state3)))(function(core2) {
+            return modify_3(function(v12) {
+              var $39 = {};
+              for (var $40 in state3) {
+                if ({}.hasOwnProperty.call(state3, $40)) {
+                  $39[$40] = state3[$40];
+                }
+                ;
+              }
+              ;
+              $39.core = core2;
+              return $39;
             });
           });
         });
       }
       ;
-      throw new Error("Failed pattern match at Main (line 66, column 16 - line 78, column 60): " + [v2.constructor.name]);
+      throw new Error("Failed pattern match at Main (line 68, column 16 - line 79, column 43): " + [v2.constructor.name]);
     };
   };
   var component = function(dictMonadEffect) {

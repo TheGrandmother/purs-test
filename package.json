@@ -9,7 +9,10 @@
   "dependencies": {
     "@elemaudio/web-renderer": "^1.0.16",
     "esbuild": "^0.17.8",
-    "g": "^2.0.1"
+    "g": "^2.0.1",
+    "live-server": "^1.2.2",
+    "node-sass": "^8.0.0",
+    "sass": "^1.58.3"
   },
   "devDependencies": {
     "eslint": "^8.34.0",
