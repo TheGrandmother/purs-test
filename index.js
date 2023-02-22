@@ -9546,7 +9546,7 @@
   var initialState = function(core) {
     return {
       core,
-      lines: lineMaker(4),
+      lines: lineMaker(7),
       gate: 0,
       freq: 440,
       duty: 3,
@@ -9597,7 +9597,7 @@
           });
         }
         ;
-        throw new Error("Failed pattern match at Main (line 84, column 5 - line 89, column 43): " + [v1.constructor.name]);
+        throw new Error("Failed pattern match at Main (line 85, column 5 - line 90, column 43): " + [v1.constructor.name]);
       }
       ;
       if (v2 instanceof ParamUpdate) {
@@ -9668,7 +9668,7 @@
           });
         }
         ;
-        throw new Error("Failed pattern match at Main (line 91, column 5 - line 100, column 47): " + [v22.constructor.name]);
+        throw new Error("Failed pattern match at Main (line 92, column 5 - line 102, column 47): " + [v22.constructor.name]);
       }
       ;
       if (v2 instanceof LineChange) {
@@ -9701,7 +9701,7 @@
         });
       }
       ;
-      throw new Error("Failed pattern match at Main (line 82, column 16 - line 104, column 43): " + [v2.constructor.name]);
+      throw new Error("Failed pattern match at Main (line 83, column 16 - line 106, column 43): " + [v2.constructor.name]);
     };
   };
   var component = function(dictMonadEffect) {
