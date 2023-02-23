@@ -27,6 +27,7 @@ module El
   , delay
   , ms2samps
   , sampleRate
+  , train
   ) where
 
 import Prelude
@@ -61,6 +62,8 @@ foreign import __adsr :: forall p1 p2 p3 p4 p5. Fn5 p1 p2 p3 p4 p5 Node
 foreign import __mul :: forall p1 p2. Fn2 p1 p2 Node
 
 foreign import __add :: forall p1 p2. Fn2 p1 p2 Node
+
+foreign import __train :: forall p1. Fn1 p1 Node
 
 foreign import __meter :: forall p1 p2. Fn2 p1 p2 Node
 
@@ -100,6 +103,9 @@ lowpass p1 p2 p3 = runFn3 __lowpass p1 p2 p3
 
 tapIn :: forall p1. Show p1 => p1 -> Node
 tapIn name = runFn1 __tapIn { name: show name }
+
+train :: forall p1. p1 -> Node
+train freq = runFn1 __train freq
 
 tapOut :: forall p1 p2. Show p1 => p1 -> p2 -> Node
 tapOut name node = runFn2 __tapOut { size: 512, name: show name } node
