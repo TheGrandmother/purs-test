@@ -1,8 +1,8 @@
 module Main where
 
 import Prelude
-import Data.Array (length, mapWithIndex, (..))
-import Data.Int (floor, toNumber)
+import Data.Array (mapWithIndex, (..))
+import Data.Int (floor)
 import Data.Maybe (Maybe(..))
 import Data.Number (fromString)
 import Data.Number.Format (fixed, toStringWith)

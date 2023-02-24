@@ -28,18 +28,21 @@ module El
   , ms2samps
   , sampleRate
   , train
+  , pow
   ) where
 
-import Prelude
 import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, Fn5, runFn1, runFn2, runFn3, runFn4, runFn5)
 import Data.Int (floor)
 import Effect (Effect)
+import Prelude (class Show, show, (*))
 
 type Core
   = {}
 
-type Node
-  = {}
+data Node = Void
+
+
+
 
 foreign import createCore :: Effect Core
 
@@ -60,6 +63,8 @@ foreign import __blepsquare :: forall p. Fn1 p Node
 foreign import __adsr :: forall p1 p2 p3 p4 p5. Fn5 p1 p2 p3 p4 p5 Node
 
 foreign import __mul :: forall p1 p2. Fn2 p1 p2 Node
+
+foreign import __pow :: forall p1 p2. Fn2 p1 p2 Node
 
 foreign import __add :: forall p1 p2. Fn2 p1 p2 Node
 
@@ -112,6 +117,9 @@ tapOut name node = runFn2 __tapOut { size: 512, name: show name } node
 
 mul :: forall p1 p2. p1 -> p2 -> Node
 mul p1 p2 = runFn2 __mul p1 p2
+
+pow :: forall p1 p2. p1 -> p2 -> Node
+pow p1 p2 = runFn2 __pow p1 p2
 
 add :: forall p1 p2. p1 -> p2 -> Node
 add p1 p2 = runFn2 __add p1 p2
