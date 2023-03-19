@@ -8,7 +8,7 @@ import Data.Maybe (Maybe(..))
 import Data.Number (fromString)
 import El as El
 
-tc :: String -> Number -> Record ()
+tc :: String -> Number -> El.Node
 tc t v = El.const t v
 
 pwmTrain :: Number -> Number -> El.Node

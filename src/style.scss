@@ -26,6 +26,11 @@ $white: #7D6658;
 $yellow: #BC5C00;
 
 
+$color-4: rgba(134, 87, 112, 1);
+$color-3: rgba(209, 185, 169, 1);
+$color-2: #E0D4C4;
+$color-1: rgba(248, 238, 228, 1);
+
 body {
   background: $bg;
   font-family: 'Courier New', monospace, bold
@@ -55,7 +60,6 @@ body {
 
 }
 
-
 input[type="range"] {
    -webkit-appearance: none;
     appearance: none;
@@ -82,4 +86,96 @@ input[type="range"]::-webkit-slider-thumb {
    background-color: $fg;
    height: 1rem;
    width: 0.5rem;
+}
+
+.rack-module {
+  width: 311px;
+  font-family: 'Courier New', monospace, bold;
+  color: $color-4;
+  padding-top: 10px;
+  user-select: none;
+  position: absolute;
+}
+
+.spacer {
+  height: 5px;
+  background: $color-4;
+}
+
+.head-plate {
+  height: 40px;
+  background: $color-3;
+  position:relative;
+  cursor: move;
+
+  .module-name {
+    color: $color-4;
+    font-size: 48px;
+    font-weight: 700;
+    text-transform: uppercase;
+    position: absolute;
+    top: -5px;
+    left: 5px;
+  }
+
+  .module-id {
+    color: $color-4;
+    font-size: 12px;
+    font-weight: 700;
+    position: absolute;
+    right: 5px;
+    top: 3px;
+  }
+}
+
+.input-plate {
+  height: 80px;
+  background: $color-3;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.control-plate {
+  background: $color-3;
+}
+
+.output-plate {
+  height: 3lh;
+  background: $color-3;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  .jack {
+    height: 1.5lh;
+  }
+}
+
+.jack {
+  width: 75px;
+  height: 50px;
+  background: $color-2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 12px;
+
+  div {
+    min-width: 80%;
+    max-width: 80%;
+    min-height: 1lh;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .source-section {
+    background: $color-1;
+  }
+
+  .destination-section {
+  }
 }

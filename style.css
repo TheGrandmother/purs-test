@@ -52,4 +52,89 @@ input[type=range]::-webkit-slider-thumb {
   width: 0.5rem;
 }
 
+.rack-module {
+  width: 311px;
+  font-family: "Courier New", monospace, bold;
+  color: rgb(134, 87, 112);
+  padding-top: 10px;
+  user-select: none;
+  position: absolute;
+}
+
+.spacer {
+  height: 5px;
+  background: rgb(134, 87, 112);
+}
+
+.head-plate {
+  height: 40px;
+  background: rgb(209, 185, 169);
+  position: relative;
+  cursor: move;
+}
+.head-plate .module-name {
+  color: rgb(134, 87, 112);
+  font-size: 48px;
+  font-weight: 700;
+  text-transform: uppercase;
+  position: absolute;
+  top: -5px;
+  left: 5px;
+}
+.head-plate .module-id {
+  color: rgb(134, 87, 112);
+  font-size: 12px;
+  font-weight: 700;
+  position: absolute;
+  right: 5px;
+  top: 3px;
+}
+
+.input-plate {
+  height: 80px;
+  background: rgb(209, 185, 169);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.control-plate {
+  background: rgb(209, 185, 169);
+}
+
+.output-plate {
+  height: 3lh;
+  background: rgb(209, 185, 169);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.output-plate .jack {
+  height: 1.5lh;
+}
+
+.jack {
+  width: 75px;
+  height: 50px;
+  background: #E0D4C4;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-evenly;
+  font-size: 12px;
+}
+.jack div {
+  min-width: 80%;
+  max-width: 80%;
+  min-height: 1lh;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.jack .source-section {
+  background: rgb(248, 238, 228);
+}
+
 /*# sourceMappingURL=style.css.map */

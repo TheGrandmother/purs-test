@@ -29,11 +29,13 @@ module El
   , sampleRate
   , train
   , pow
+  , getProps
   ) where
 
 import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, Fn5, runFn1, runFn2, runFn3, runFn4, runFn5)
 import Data.Int (floor)
 import Effect (Effect)
+import Foreign.Object (Object)
 import Prelude (class Show, show, (*))
 
 type Core
@@ -99,6 +101,8 @@ foreign import __lowpass :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
 foreign import __delay :: forall p1 p2 p3 p4. Fn4 p1 p2 p3 p4 Node
 
 foreign import sampleRate :: Number
+
+foreign import getProps :: forall a. Node -> Object a
 
 highpass :: forall p1 p2 p3. p1 -> p2 -> p3 -> Node
 highpass p1 p2 p3 = runFn3 __highpass p1 p2 p3

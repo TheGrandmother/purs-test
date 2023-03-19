@@ -21,6 +21,7 @@ export const createCore = () => {
   addEventListener('touchstart', contextStarter)
 
   core.on('load', () => {
+    console.log(el.tapIn({name: 'fitta'}))
   })
   const start = async() => {
     const node = await core.initialize(ctx, {
@@ -38,6 +39,8 @@ export const createCore = () => {
   start()
   return core
 }
+
+export const getProps = node => node.props
 
 export const createCtx = new AudioContext()
 
