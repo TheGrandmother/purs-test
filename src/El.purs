@@ -30,6 +30,7 @@ module El
   , train
   , pow
   , getProps
+  , quiet
   ) where
 
 import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, Fn5, runFn1, runFn2, runFn3, runFn4, runFn5)
@@ -42,9 +43,6 @@ type Core
   = {}
 
 data Node = Void
-
-
-
 
 foreign import createCore :: Effect Core
 
@@ -168,3 +166,6 @@ const key val = runFn1 __const { key: key, value: val }
 
 meter :: forall p. String -> p -> Node
 meter name p = runFn2 __meter { name: name } p
+
+quiet :: Node
+quiet = const "___quiet___" 0.0
