@@ -1,7 +1,3 @@
-
-
-
-
 names = [
     "meter", "scope", "fft", "snapshot", "accum", "const",
     "counter", "db2gain", "maxhold", "metro", "ms2samps", "select", "sr",

@@ -12,8 +12,11 @@ to generate this file without the comments in this block.
 -}
 { name = "my-project"
 , dependencies =
-  [ "arrays"
+  [ "aff"
+  , "arrays"
+  , "canvas"
   , "console"
+  , "datetime"
   , "debug"
   , "effect"
   , "foldable-traversable"
@@ -21,15 +24,18 @@ to generate this file without the comments in this block.
   , "functions"
   , "halogen"
   , "integers"
+  , "linalg"
   , "lists"
   , "maybe"
   , "numbers"
+  , "partial"
   , "prelude"
+  , "quickcheck"
   , "random"
-  , "record"
-  , "record-studio"
+  , "spec"
+  , "spec-quickcheck"
   , "tuples"
-  , "web-events"
+  , "unfoldable"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
