@@ -42,7 +42,8 @@ import Prelude (class Show, show, (*))
 type Core
   = {}
 
-data Node = Void
+data Node
+  = Void
 
 foreign import createCore :: Effect Core
 
