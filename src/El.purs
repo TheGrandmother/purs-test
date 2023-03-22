@@ -53,7 +53,7 @@ foreign import onCoreLoad :: Core -> (Core -> Core) -> Effect Core
 
 foreign import render :: forall p1 p2. Core -> p1 -> p2 -> Effect Core
 
-foreign import renderMono :: forall p. Core -> p -> Effect Core
+foreign import renderMono :: Core -> Node -> Effect Core
 
 foreign import play :: Core -> Effect Core
 

@@ -21,6 +21,16 @@ data Material
   | Wood
   | Air
 
+instance showMaterial :: Show Material where
+  show AcousticTile = "AcousticTile"
+  show Brick = "Brick"
+  show Fabric = "Fabric"
+  show Marble = "Marble"
+  show Concrete = "Concrete"
+  show Wood = "Wood "
+  show Air = "Air "
+
+
 absorbtionFreq :: Array Number
 absorbtionFreq = [ 125.0, 250.0, 500.0, 1000.0, 2000.0 ]
 
@@ -50,7 +60,8 @@ speedOfSound Marble = 3810.0
 
 speedOfSound Concrete = 3700.0
 
-speedOfSound Wood = 3600.0
+-- speedOfSound Wood = 3600.0
+speedOfSound Wood = 1000.0
 
 speedOfSound Air = 343.0
 
@@ -77,7 +88,7 @@ impedance :: Material -> Number
 impedance m = speedOfSound m * density m
 
 reflectionCoefficient :: Material -> Material -> Number
-reflectionCoefficient m1 m2 = div (impedance m2 - impedance m1) (impedance m2 + impedance m1)
+reflectionCoefficient m1 m2 = (impedance m2 - impedance m1) / (impedance m2 + impedance m1)
 
 absorbtionCoefficient :: Number -> Number
 absorbtionCoefficient rc = 1.0 - rc * rc

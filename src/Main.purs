@@ -1,9 +1,14 @@
 module Main where
 
 import Prelude
+
+import Data.Foldable (foldl)
+import Data.Int (toNumber)
+import Data.List (List, length)
+import Data.Traversable (class Traversable)
+import Data.Unfoldable (class Unfoldable, replicateA)
 import Effect (Effect)
 import Effect.Class (class MonadEffect)
-import Effect.Console (log)
 import El as El
 import Halogen as H
 import Halogen.Aff (awaitBody, runHalogenAff)
@@ -18,6 +23,7 @@ main =
   runHalogenAff do
     body <- awaitBody
     core <- H.liftEffect El.createCore
+    _ <- H.liftEffect $ traverse testWorld1
     runUI component core body
 
 type State
@@ -50,8 +56,27 @@ balle x = HH.div_ [ HH.text $ show $ impedance x ]
 anus :: forall t95 t96. Array (HH.HTML t95 t96)
 anus = balle <$> [ Air, Fabric, Wood, Concrete ]
 
+mix :: List El.Node -> El.Node
+mix l =
+  let
+    damp = 1.0 / (toNumber $ length l)
+  in
+    El.mul damp $ foldl (El.add) (El.const "_" 0.0) l
+
+
+keso :: forall f22. Unfoldable f22 => Traversable f22 => Effect (f22 El.Node)
+keso = replicateA 1000 (traverse testWorld1)
+
 handleAction :: forall output m. MonadEffect m => Action -> H.HalogenM State Action () output m Unit
 handleAction = case _ of
   Nothing -> do
-    _ <- H.liftEffect $ traverse testWorld1
-    H.modify_ \state -> state
+    thing <- H.liftEffect keso
+    core <- H.gets _.core
+    core2 <- H.liftEffect $ El.renderMono core (mix thing)
+    H.modify_ \state -> state {core = core2}
+
+  --   Kuken _ -> do
+  --   core <- H.gets _.core
+  --   core2 <- H.liftEffect $ El.renderMono core $ M.renderRack rack
+  --   H.modify_ \state -> state {core = core2}
+  -- _ -> H.modify_ \state -> state
