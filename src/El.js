@@ -21,7 +21,10 @@ export const createCore = () => {
   addEventListener('touchstart', contextStarter)
 
   core.on('load', () => {
-    console.log(el.tapIn({name: 'fitta'}))
+
+
+
+    console.log(el.tapIn({name: ''}))
   })
   const start = async() => {
     const node = await core.initialize(ctx, {
@@ -29,6 +32,16 @@ export const createCore = () => {
       numberOfOutputs: 1,
       outputChannelCount: [2],
     })
+
+
+
+    const res = await fetch('test.wav')
+    const sampleBuffer = await ctx.decodeAudioData(await res.arrayBuffer())
+
+    core.updateVirtualFileSystem({
+      'test.wav': sampleBuffer.getChannelData(0),
+    })
+
     node.connect(ctx.destination)
     core.on('meter', function(e) {
       if (e.source === 'kuken') {
@@ -71,6 +84,7 @@ export const play = core => () => {
       numberOfOutputs: 1,
       outputChannelCount: [2],
     })
+
     node.connect(ctx.destination)
     core.on('meter', function(e) {
       if (e.source === 'kuken') {
@@ -80,8 +94,6 @@ export const play = core => () => {
         console.log(e.max)
       }
     })
-
-
 
     console.log(node)
   }

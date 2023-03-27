@@ -29,6 +29,7 @@ to generate this file without the comments in this block.
   , "record"
   , "record-studio"
   , "tuples"
+  , "unfoldable"
   , "web-events"
   ]
 , packages = ./packages.dhall

@@ -1221,6 +1221,9 @@
       return Math.pow(n, p2);
     };
   };
+  var sign = Math.sign ? Math.sign : function(x) {
+    return x === 0 || x !== x ? x : x < 0 ? -1 : 1;
+  };
 
   // output/Data.Number/index.js
   var e = 2.718281828459045;
@@ -3166,6 +3169,18 @@
   };
   var nonCanceler = /* @__PURE__ */ $$const(/* @__PURE__ */ pure22(unit));
 
+  // output/Effect.Console/foreign.js
+  var log2 = function(s) {
+    return function() {
+      console.log(s);
+    };
+  };
+  var warn = function(s) {
+    return function() {
+      console.warn(s);
+    };
+  };
+
   // node_modules/@elemaudio/core/dist/index.js
   var import_shallowequal = __toESM(require_shallowequal(), 1);
   var import_invariant = __toESM(require_browser(), 1);
@@ -4278,13 +4293,18 @@
     addEventListener("mouseover", contextStarter);
     addEventListener("touchstart", contextStarter);
     core.on("load", () => {
-      console.log(Eo.tapIn({ name: "fitta" }));
+      console.log(Eo.tapIn({ name: "" }));
     });
     const start2 = async () => {
       const node = await core.initialize(ctx2, {
         numberOfInputs: 0,
         numberOfOutputs: 1,
         outputChannelCount: [2]
+      });
+      const res = await fetch("test.wav");
+      const sampleBuffer = await ctx2.decodeAudioData(await res.arrayBuffer());
+      core.updateVirtualFileSystem({
+        "test.wav": sampleBuffer.getChannelData(0)
       });
       node.connect(ctx2.destination);
       core.on("meter", function(e2) {
@@ -4306,8 +4326,8 @@
   var __const = (...props) => Eo.const(...props);
   var __sdelay = (...props) => Eo.sdelay(...props);
   var __sm = (...props) => Eo.sm(...props);
-  var __cycle = (...props) => Eo.cycle(...props);
   var __phasor = (...props) => Eo.phasor(...props);
+  var __sample = (...props) => Eo.sample(...props);
   var __le = (...props) => Eo.le(...props);
   var __add = (...props) => Eo.add(...props);
   var __mul = (...props) => Eo.mul(...props);
@@ -4324,6 +4344,15 @@
       }, p2);
     };
   };
+  var sample = function(file) {
+    return function(gate) {
+      return function(pitch) {
+        return __sample({
+          path: file
+        }, gate, pitch);
+      };
+    };
+  };
   var ramp = function(p1) {
     return __phasor(p1, 0);
   };
@@ -4336,9 +4365,6 @@
     return function(p2) {
       return __le(p1, p2);
     };
-  };
-  var cycle = function(p2) {
-    return __cycle(p2);
   };
   var $$const2 = function(key) {
     return function(val) {
@@ -7691,18 +7717,6 @@
     return dict.fork;
   };
 
-  // output/Effect.Console/foreign.js
-  var log2 = function(s) {
-    return function() {
-      console.log(s);
-    };
-  };
-  var warn = function(s) {
-    return function() {
-      console.warn(s);
-    };
-  };
-
   // output/Halogen.Aff.Driver.State/index.js
   var unRenderStateX = unsafeCoerce2;
   var unDriverStateX = unsafeCoerce2;
@@ -8687,39 +8701,6 @@
     ;
     throw new Error("Failed pattern match at Materials (line 52, column 1 - line 52, column 35): " + [v2.constructor.name]);
   };
-  var showMaterial = {
-    show: function(v2) {
-      if (v2 instanceof AcousticTile) {
-        return "AcousticTile";
-      }
-      ;
-      if (v2 instanceof Brick) {
-        return "Brick";
-      }
-      ;
-      if (v2 instanceof Fabric) {
-        return "Fabric";
-      }
-      ;
-      if (v2 instanceof Marble) {
-        return "Marble";
-      }
-      ;
-      if (v2 instanceof Concrete) {
-        return "Concrete";
-      }
-      ;
-      if (v2 instanceof Wood) {
-        return "Wood ";
-      }
-      ;
-      if (v2 instanceof Air) {
-        return "Air ";
-      }
-      ;
-      throw new Error("Failed pattern match at Materials (line 24, column 1 - line 31, column 20): " + [v2.constructor.name]);
-    }
-  };
   var density = function(v2) {
     if (v2 instanceof Air) {
       return 1e-3;
@@ -8759,8 +8740,6 @@
   var random = Math.random;
 
   // output/Space/index.js
-  var show2 = /* @__PURE__ */ show(showMaterial);
-  var show1 = /* @__PURE__ */ show(showNumber);
   var pure9 = /* @__PURE__ */ pure(applicativeEffect);
   var Medium = /* @__PURE__ */ function() {
     function Medium2(value0, value1) {
@@ -8797,38 +8776,13 @@
       return $$const2(t)(v2);
     };
   };
-  var showMaterial2 = {
-    show: function(v2) {
-      if (v2 instanceof Medium) {
-        return show2(v2.value0) + show1(v2.value1);
-      }
-      ;
-      if (v2 instanceof Source) {
-        return "source";
-      }
-      ;
-      if (v2 instanceof Mic) {
-        return "Mic";
-      }
-      ;
-      throw new Error("Failed pattern match at Space (line 20, column 1 - line 23, column 19): " + [v2.constructor.name]);
-    }
-  };
-  var show22 = /* @__PURE__ */ show(showMaterial2);
   var pwmTrain = function(freq) {
     return function(duty) {
       return sm(le2(ramp(tc("f")(freq)))(tc("d")(duty)));
     };
   };
-  var pulseGen = function(pulseFreq) {
-    return function(duty) {
-      return function(freq) {
-        return mul2(cycle($$const2("os_f")(freq)))(pwmTrain(pulseFreq)(duty));
-      };
-    };
-  };
   var testWorld1 = /* @__PURE__ */ function() {
-    return fromFoldable(foldableArray)([Mic.value, new Medium(Air.value, 10), new Medium(Wood.value, 5e-3), new Medium(Air.value, 50), new Medium(Wood.value, 0.01), new Medium(Air.value, 20), new Medium(Wood.value, 5e-3), new Medium(Air.value, 10), new Source(pulseGen(0.5)(0.05)(440))]);
+    return fromFoldable(foldableArray)([Mic.value, new Medium(Air.value, 10), new Medium(Wood.value, 5e-3), new Medium(Air.value, 50), new Medium(Wood.value, 0.01), new Medium(Air.value, 100), new Medium(Wood.value, 5e-3), new Medium(Air.value, 10), new Source(sample("test.wav")(pwmTrain(0.2)(0.1))(1))]);
   }();
   var attenuate = function(dx) {
     return function(z2) {
@@ -8837,18 +8791,20 @@
   };
   var transportNode = function(m) {
     return function(x) {
-      var delay = x / speedOfSound(m);
-      var attenuation = attenuate(x)(impedance(m));
-      return function(n) {
-        if (n instanceof Just) {
-          return sdelay(delay)(mul2(attenuation)(n.value0));
-        }
-        ;
-        if (n instanceof Nothing) {
-          return quiet;
-        }
-        ;
-        throw new Error("Failed pattern match at Space (line 100, column 27 - line 102, column 24): " + [n.constructor.name]);
+      return function(rc) {
+        var delay = x / speedOfSound(m);
+        var attenuation = attenuate(x)(impedance(m));
+        return function(n) {
+          if (n instanceof Just) {
+            return sdelay(delay)(mul2(attenuation * sign(rc))(n.value0));
+          }
+          ;
+          if (n instanceof Nothing) {
+            return quiet;
+          }
+          ;
+          throw new Error("Failed pattern match at Space (line 96, column 30 - line 98, column 22): " + [n.constructor.name]);
+        };
       };
     };
   };
@@ -8863,7 +8819,7 @@
           if (v1 instanceof Nil && (v22 instanceof Cons && (v22.value0 instanceof Mic && (v22.value1 instanceof Cons && v22.value1.value0 instanceof Medium)))) {
             return function __do2() {
               var rec = _traverse(v2 - 1 | 0)(new Cons(new Medium(v22.value1.value0.value0, v22.value1.value0.value1), new Cons(Mic.value, Nil.value)))(v22.value1.value1)();
-              return new Just(transportNode(v22.value1.value0.value0)(v22.value1.value0.value1)(rec));
+              return new Just(transportNode(v22.value1.value0.value0)(v22.value1.value0.value1)(1)(rec));
             };
           }
           ;
@@ -8875,25 +8831,19 @@
             }();
             return function __do2() {
               var pick = random();
-              log2(show22(new Medium(v1.value0.value0, v1.value0.value1)) + (" | " + show22(new Medium(v22.value0.value0, v22.value0.value1))))();
-              var $36 = pick < abs(rc);
-              if ($36) {
-                log2("reflecting")();
+              var $33 = pick < abs(rc);
+              if ($33) {
                 var rec = _traverse(v2 - 1 | 0)(new Cons(new Medium(v1.value0.value0, v1.value0.value1), new Cons(new Medium(v22.value0.value0, v22.value0.value1), v22.value1)))(v1.value1)();
-                return new Just(transportNode(v1.value0.value0)(v1.value0.value1)(rec));
+                return new Just(transportNode(v1.value0.value0)(v1.value0.value1)(rc)(rec));
               }
               ;
-              log2("absorbing")();
               var rec = _traverse(v2 - 1 | 0)(new Cons(new Medium(v22.value0.value0, v22.value0.value1), new Cons(new Medium(v1.value0.value0, v1.value0.value1), v1.value1)))(v22.value1)();
-              return new Just(transportNode(v22.value0.value0)(v22.value0.value1)(rec));
+              return new Just(transportNode(v22.value0.value0)(v22.value0.value1)(1)(rec));
             };
           }
           ;
           if (v1 instanceof Cons && (v1.value0 instanceof Medium && (v22 instanceof Cons && (v22.value0 instanceof Source && v22.value1 instanceof Nil)))) {
-            return function __do2() {
-              log2("Arrived at source")();
-              return new Just(transportNode(v1.value0.value0)(v1.value0.value1)(new Just(v22.value0.value0)));
-            };
+            return pure9(new Just(transportNode(v1.value0.value0)(v1.value0.value1)(1)(new Just(v22.value0.value0))));
           }
           ;
           if (v1 instanceof Cons && (v1.value0 instanceof Source && v1.value1 instanceof Nil)) {
@@ -8901,10 +8851,7 @@
           }
           ;
           if (v22 instanceof Cons && (v22.value0 instanceof Mic && v22.value1 instanceof Nil)) {
-            return function __do2() {
-              log2("Returned to mic")();
-              return Nothing.value;
-            };
+            return pure9(Nothing.value);
           }
           ;
           if (v1 instanceof Cons && (v1.value0 instanceof Mic && v1.value1 instanceof Nil)) {
@@ -8916,7 +8863,7 @@
       };
     };
     return function __do2() {
-      var ugh = _traverse(500)(Nil.value)(l)();
+      var ugh = _traverse(300)(Nil.value)(l)();
       if (ugh instanceof Just) {
         return ugh.value0;
       }
@@ -8925,7 +8872,7 @@
         return quiet;
       }
       ;
-      throw new Error("Failed pattern match at Space (line 56, column 3 - line 58, column 29): " + [ugh.constructor.name]);
+      throw new Error("Failed pattern match at Space (line 55, column 3 - line 59, column 20): " + [ugh.constructor.name]);
     };
   };
 
@@ -8935,7 +8882,7 @@
   var bind5 = /* @__PURE__ */ bind(bindHalogenM);
   var gets2 = /* @__PURE__ */ gets(monadStateHalogenM);
   var modify_3 = /* @__PURE__ */ modify_(monadStateHalogenM);
-  var show3 = /* @__PURE__ */ show(showNumber);
+  var show2 = /* @__PURE__ */ show(showNumber);
   var bind15 = /* @__PURE__ */ bind(bindAff);
   var liftEffect7 = /* @__PURE__ */ liftEffect(monadEffectAff);
   var Nothing2 = /* @__PURE__ */ function() {
@@ -8964,22 +8911,26 @@
   var handleAction = function(dictMonadEffect) {
     var liftEffect12 = liftEffect(monadEffectHalogenM(dictMonadEffect));
     return function(v2) {
-      return bind5(liftEffect12(keso1))(function(thing) {
-        return bind5(gets2(function(v1) {
-          return v1.core;
-        }))(function(core) {
-          return bind5(liftEffect12(renderMono(core)(mix(thing))))(function(core2) {
-            return modify_3(function(state3) {
-              var $29 = {};
-              for (var $30 in state3) {
-                if ({}.hasOwnProperty.call(state3, $30)) {
-                  $29[$30] = state3[$30];
-                }
-                ;
-              }
-              ;
-              $29.core = core2;
-              return $29;
+      return bind5(liftEffect12(log2("Trcing")))(function() {
+        return bind5(liftEffect12(keso1))(function(thing) {
+          return bind5(liftEffect12(log2("Traced")))(function() {
+            return bind5(gets2(function(v1) {
+              return v1.core;
+            }))(function(core) {
+              return bind5(liftEffect12(renderMono(core)(mix(thing))))(function(core2) {
+                return modify_3(function(state3) {
+                  var $29 = {};
+                  for (var $30 in state3) {
+                    if ({}.hasOwnProperty.call(state3, $30)) {
+                      $29[$30] = state3[$30];
+                    }
+                    ;
+                  }
+                  ;
+                  $29.core = core2;
+                  return $29;
+                });
+              });
             });
           });
         });
@@ -8987,7 +8938,7 @@
     };
   };
   var balle = function(x) {
-    return div_([text5(show3(impedance(x)))]);
+    return div_([text5(show2(impedance(x)))]);
   };
   var anus = /* @__PURE__ */ function() {
     return map(functorArray)(balle)([Air.value, Fabric.value, Wood.value, Concrete.value]);

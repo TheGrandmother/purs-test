@@ -27,6 +27,7 @@ module El
   , delay
   , ms2samps
   , sampleRate
+  , sample
   , train
   , pow
   , getProps
@@ -99,6 +100,8 @@ foreign import __lowpass :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
 
 foreign import __delay :: forall p1 p2 p3 p4. Fn4 p1 p2 p3 p4 Node
 
+foreign import __sample :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
+
 foreign import sampleRate :: Number
 
 foreign import getProps :: forall a. Node -> Object a
@@ -167,6 +170,9 @@ const key val = runFn1 __const { key: key, value: val }
 
 meter :: forall p. String -> p -> Node
 meter name p = runFn2 __meter { name: name } p
+
+sample :: forall p2 p3. String -> p2 -> p3 -> Node
+sample file gate pitch = runFn3 __sample { path: file } gate pitch
 
 quiet :: Node
 quiet = const "___quiet___" 0.0

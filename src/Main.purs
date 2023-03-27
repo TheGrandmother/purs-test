@@ -1,7 +1,6 @@
 module Main where
 
 import Prelude
-
 import Data.Foldable (foldl)
 import Data.Int (toNumber)
 import Data.List (List, length)
@@ -9,6 +8,7 @@ import Data.Traversable (class Traversable)
 import Data.Unfoldable (class Unfoldable, replicateA)
 import Effect (Effect)
 import Effect.Class (class MonadEffect)
+import Effect.Console (log)
 import El as El
 import Halogen as H
 import Halogen.Aff (awaitBody, runHalogenAff)
@@ -63,20 +63,21 @@ mix l =
   in
     El.mul damp $ foldl (El.add) (El.const "_" 0.0) l
 
-
 keso :: forall f22. Unfoldable f22 => Traversable f22 => Effect (f22 El.Node)
 keso = replicateA 1000 (traverse testWorld1)
 
 handleAction :: forall output m. MonadEffect m => Action -> H.HalogenM State Action () output m Unit
 handleAction = case _ of
   Nothing -> do
+    _ <- H.liftEffect $ log "Trcing"
     thing <- H.liftEffect keso
+    _ <- H.liftEffect $ log "Traced"
     core <- H.gets _.core
     core2 <- H.liftEffect $ El.renderMono core (mix thing)
-    H.modify_ \state -> state {core = core2}
+    H.modify_ \state -> state { core = core2 }
 
-  --   Kuken _ -> do
-  --   core <- H.gets _.core
-  --   core2 <- H.liftEffect $ El.renderMono core $ M.renderRack rack
-  --   H.modify_ \state -> state {core = core2}
-  -- _ -> H.modify_ \state -> state
+--   Kuken _ -> do
+--   core <- H.gets _.core
+--   core2 <- H.liftEffect $ El.renderMono core $ M.renderRack rack
+--   H.modify_ \state -> state {core = core2}
+-- _ -> H.modify_ \state -> state
