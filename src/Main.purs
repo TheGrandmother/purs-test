@@ -64,12 +64,12 @@ mix l =
     El.mul damp $ foldl (El.add) (El.const "_" 0.0) l
 
 keso :: forall f22. Unfoldable f22 => Traversable f22 => Effect (f22 El.Node)
-keso = replicateA 1000 (traverse testWorld1)
+keso = replicateA 500 (traverse testWorld1)
 
 handleAction :: forall output m. MonadEffect m => Action -> H.HalogenM State Action () output m Unit
 handleAction = case _ of
   Nothing -> do
-    _ <- H.liftEffect $ log "Trcing"
+    _ <- H.liftEffect $ log "Tracing"
     thing <- H.liftEffect keso
     _ <- H.liftEffect $ log "Traced"
     core <- H.gets _.core

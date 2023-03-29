@@ -7,6 +7,7 @@ module Materials
   , impedance
   , reflectionCoefficient
   , absorbtionCoefficient
+  , naturalFreq
   ) where
 
 import Prelude
@@ -29,7 +30,6 @@ instance showMaterial :: Show Material where
   show Concrete = "Concrete"
   show Wood = "Wood "
   show Air = "Air "
-
 
 absorbtionFreq :: Array Number
 absorbtionFreq = [ 125.0, 250.0, 500.0, 1000.0, 2000.0 ]
@@ -92,3 +92,6 @@ reflectionCoefficient m1 m2 = (impedance m2 - impedance m1) / (impedance m2 + im
 
 absorbtionCoefficient :: Number -> Number
 absorbtionCoefficient rc = 1.0 - rc * rc
+
+naturalFreq :: Material -> Number -> Number
+naturalFreq m x = (speedOfSound m) / (2.0 * x)

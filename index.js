@@ -741,6 +741,9 @@
   };
 
   // output/Data.Show/foreign.js
+  var showIntImpl = function(n) {
+    return n.toString();
+  };
   var showNumberImpl = function(n) {
     var str = n.toString();
     return isNaN(str + ".0") ? str : str + ".0";
@@ -749,6 +752,9 @@
   // output/Data.Show/index.js
   var showNumber = {
     show: showNumberImpl
+  };
+  var showInt = {
+    show: showIntImpl
   };
   var show = function(dict) {
     return dict.show;
@@ -4325,6 +4331,7 @@
   var sampleRate = ctx.sampleRate;
   var __const = (...props) => Eo.const(...props);
   var __sdelay = (...props) => Eo.sdelay(...props);
+  var __lowpass = (...props) => Eo.lowpass(...props);
   var __sm = (...props) => Eo.sm(...props);
   var __phasor = (...props) => Eo.phasor(...props);
   var __sample = (...props) => Eo.sample(...props);
@@ -4359,6 +4366,13 @@
   var mul2 = function(p1) {
     return function(p2) {
       return __mul(p1, p2);
+    };
+  };
+  var lowpass = function(p1) {
+    return function(p2) {
+      return function(p3) {
+        return __lowpass(p1, p2, p3);
+      };
     };
   };
   var le2 = function(p1) {
@@ -8741,6 +8755,7 @@
 
   // output/Space/index.js
   var pure9 = /* @__PURE__ */ pure(applicativeEffect);
+  var show2 = /* @__PURE__ */ show(showInt);
   var Medium = /* @__PURE__ */ function() {
     function Medium2(value0, value1) {
       this.value0 = value0;
@@ -8782,28 +8797,30 @@
     };
   };
   var testWorld1 = /* @__PURE__ */ function() {
-    return fromFoldable(foldableArray)([Mic.value, new Medium(Air.value, 10), new Medium(Wood.value, 5e-3), new Medium(Air.value, 50), new Medium(Wood.value, 0.01), new Medium(Air.value, 100), new Medium(Wood.value, 5e-3), new Medium(Air.value, 10), new Source(sample("test.wav")(pwmTrain(0.2)(0.1))(1))]);
+    return fromFoldable(foldableArray)([Mic.value, new Medium(Air.value, 10), new Medium(Wood.value, 5e-3), new Medium(Air.value, 10), new Medium(Wood.value, 0.01), new Medium(Air.value, 40), new Medium(Wood.value, 0.01), new Medium(Air.value, 10), new Source(sample("test.wav")(pwmTrain(0.15)(0.1))(1))]);
   }();
   var attenuate = function(dx) {
     return function(z2) {
-      return pow(e)(-1 * dx * z2 * 0.01);
+      return pow(e)(-1 * dx * z2 * 1e-3);
     };
   };
   var transportNode = function(m) {
     return function(x) {
       return function(rc) {
+        var z2 = impedance(m);
+        var fc = 2e4 * (1 - pow(e)(-1 / (x * z2 * z2 * 1e-3)));
         var delay = x / speedOfSound(m);
-        var attenuation = attenuate(x)(impedance(m));
+        var attenuation = attenuate(x)(z2);
         return function(n) {
           if (n instanceof Just) {
-            return sdelay(delay)(mul2(attenuation * sign(rc))(n.value0));
+            return sdelay(delay)(mul2(attenuation * sign(rc))(lowpass(fc)(1)(n.value0)));
           }
           ;
           if (n instanceof Nothing) {
             return quiet;
           }
           ;
-          throw new Error("Failed pattern match at Space (line 96, column 30 - line 98, column 22): " + [n.constructor.name]);
+          throw new Error("Failed pattern match at Space (line 104, column 30 - line 106, column 22): " + [n.constructor.name]);
         };
       };
     };
@@ -8831,19 +8848,22 @@
             }();
             return function __do2() {
               var pick = random();
-              var $33 = pick < abs(rc);
-              if ($33) {
+              var $36 = pick < abs(rc);
+              if ($36) {
                 var rec = _traverse(v2 - 1 | 0)(new Cons(new Medium(v1.value0.value0, v1.value0.value1), new Cons(new Medium(v22.value0.value0, v22.value0.value1), v22.value1)))(v1.value1)();
                 return new Just(transportNode(v1.value0.value0)(v1.value0.value1)(rc)(rec));
               }
               ;
               var rec = _traverse(v2 - 1 | 0)(new Cons(new Medium(v22.value0.value0, v22.value0.value1), new Cons(new Medium(v1.value0.value0, v1.value0.value1), v1.value1)))(v22.value1)();
-              return new Just(transportNode(v22.value0.value0)(v22.value0.value1)(1)(rec));
+              return new Just(transportNode(v22.value0.value0)(v22.value0.value1)(rc)(rec));
             };
           }
           ;
           if (v1 instanceof Cons && (v1.value0 instanceof Medium && (v22 instanceof Cons && (v22.value0 instanceof Source && v22.value1 instanceof Nil)))) {
-            return pure9(new Just(transportNode(v1.value0.value0)(v1.value0.value1)(1)(new Just(v22.value0.value0))));
+            return function __do2() {
+              log2("found source after " + show2(50 - v2 | 0))();
+              return new Just(transportNode(v1.value0.value0)(v1.value0.value1)(1)(new Just(v22.value0.value0)));
+            };
           }
           ;
           if (v1 instanceof Cons && (v1.value0 instanceof Source && v1.value1 instanceof Nil)) {
@@ -8855,7 +8875,10 @@
           }
           ;
           if (v1 instanceof Cons && (v1.value0 instanceof Mic && v1.value1 instanceof Nil)) {
-            return pure9(Nothing.value);
+            return function __do2() {
+              log2("odd")();
+              return Nothing.value;
+            };
           }
           ;
           return pure9(Nothing.value);
@@ -8863,7 +8886,7 @@
       };
     };
     return function __do2() {
-      var ugh = _traverse(300)(Nil.value)(l)();
+      var ugh = _traverse(50)(Nil.value)(l)();
       if (ugh instanceof Just) {
         return ugh.value0;
       }
@@ -8872,7 +8895,7 @@
         return quiet;
       }
       ;
-      throw new Error("Failed pattern match at Space (line 55, column 3 - line 59, column 20): " + [ugh.constructor.name]);
+      throw new Error("Failed pattern match at Space (line 56, column 3 - line 60, column 20): " + [ugh.constructor.name]);
     };
   };
 
@@ -8882,7 +8905,7 @@
   var bind5 = /* @__PURE__ */ bind(bindHalogenM);
   var gets2 = /* @__PURE__ */ gets(monadStateHalogenM);
   var modify_3 = /* @__PURE__ */ modify_(monadStateHalogenM);
-  var show2 = /* @__PURE__ */ show(showNumber);
+  var show3 = /* @__PURE__ */ show(showNumber);
   var bind15 = /* @__PURE__ */ bind(bindAff);
   var liftEffect7 = /* @__PURE__ */ liftEffect(monadEffectAff);
   var Nothing2 = /* @__PURE__ */ function() {
@@ -8899,7 +8922,7 @@
   var keso = function(dictUnfoldable) {
     var replicateA1 = replicateA2(dictUnfoldable);
     return function(dictTraversable) {
-      return replicateA1(dictTraversable)(1e3)(traverse2(testWorld1));
+      return replicateA1(dictTraversable)(500)(traverse2(testWorld1));
     };
   };
   var keso1 = /* @__PURE__ */ keso(unfoldableList)(traversableList);
@@ -8911,7 +8934,7 @@
   var handleAction = function(dictMonadEffect) {
     var liftEffect12 = liftEffect(monadEffectHalogenM(dictMonadEffect));
     return function(v2) {
-      return bind5(liftEffect12(log2("Trcing")))(function() {
+      return bind5(liftEffect12(log2("Tracing")))(function() {
         return bind5(liftEffect12(keso1))(function(thing) {
           return bind5(liftEffect12(log2("Traced")))(function() {
             return bind5(gets2(function(v1) {
@@ -8938,7 +8961,7 @@
     };
   };
   var balle = function(x) {
-    return div_([text5(show2(impedance(x)))]);
+    return div_([text5(show3(impedance(x)))]);
   };
   var anus = /* @__PURE__ */ function() {
     return map(functorArray)(balle)([Air.value, Fabric.value, Wood.value, Concrete.value]);
