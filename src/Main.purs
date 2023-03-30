@@ -1,6 +1,7 @@
 module Main where
 
 import Prelude
+
 import Data.Foldable (foldl)
 import Data.Int (toNumber)
 import Data.List (List, length)
@@ -15,17 +16,14 @@ import Halogen.Aff (awaitBody, runHalogenAff)
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HV
 import Halogen.VDom.Driver (runUI)
-import Materials (Material(..), impedance)
-import Space (testWorld1, traverse, traverse2)
+import Space (test, testWorld1, traverse)
 
 main :: Effect Unit
 main =
   runHalogenAff do
     body <- awaitBody
     core <- H.liftEffect El.createCore
-    _ <- H.liftEffect $ traverse testWorld1
-    snopp <- H.liftEffect $ traverse2 testWorld1
-    _ <- H.liftEffect $ log (show snopp)
+    _ <- H.liftEffect $ test
     runUI component core body
 
 type State
@@ -48,15 +46,7 @@ initialState core = { core: core }
 render :: forall m. State -> H.ComponentHTML Action () m
 render _ = do
   HH.div_
-    $ [ HH.button [ HV.onClick \_ -> Nothing ] [ HH.text "kuken" ]
-      , HH.div_ anus
-      ]
-
-balle :: forall w15 i16. Material -> HH.HTML w15 i16
-balle x = HH.div_ [ HH.text $ show $ impedance x ]
-
-anus :: forall t95 t96. Array (HH.HTML t95 t96)
-anus = balle <$> [ Air, Fabric, Wood, Concrete ]
+    $ [ HH.button [ HV.onClick \_ -> Nothing ] [ HH.text "kuken" ] ]
 
 mix :: List El.Node -> El.Node
 mix l =

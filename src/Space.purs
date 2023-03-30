@@ -1,10 +1,15 @@
 module Space where
 
 import Prelude
-import Data.List (List(..), fromFoldable, (:))
+
+import Data.Foldable (foldr)
+import Data.Int (toNumber)
+import Data.List (List(..), filter, fromFoldable, length, (:))
 import Data.Maybe (Maybe(..))
 import Data.Number (abs, e, pow, sign)
-import Debug (trace)
+import Data.Number.Format (precision, toStringWith)
+import Data.Traversable (class Traversable)
+import Data.Unfoldable (class Unfoldable, replicateA)
 import Effect (Effect)
 import Effect.Console (log)
 import Effect.Random (random)
@@ -44,6 +49,8 @@ testWorld1 =
     , Medium Wood 0.01
     , Medium Air 40.0
     , Medium Wood 0.01
+    , Medium Air 40.0
+    , Medium Wood 0.01
     , Medium Air 10.0
     --, Source (pulseGen 0.5 0.05 440.0)
     , Source (sample "test.wav" (pwmTrain 0.15 0.1) 1.0)
@@ -54,14 +61,51 @@ data Trace
   | Absorbtion Number Number Number
 
 instance showTrace :: Show Trace where
-  show (Absorbtion d att f) = "Absorb " <> (show d) <> "s " <> (show att) <> "x " <> (show f) <> "hz"
-  show (Reflection d att f) = "Reflect " <> (show d) <> "s " <> (show att) <> "x " <> (show f) <> "hz"
+  show (Absorbtion d att f) = "Absorb " <> (fmt (d * 1000.0)) <> "ms " <> (fmt att) <> "x " <> (fmt f) <> "hz \n"
+  show (Reflection d att f) = "Reflect " <> (fmt (d * 1000.0)) <> "ms " <> (fmt att) <> "x " <> (fmt f) <> "hz \n"
+
+fmt :: Number -> String
+fmt x = toStringWith (precision 3) x
+
+getTotalAttenuation :: List Trace -> Number
+getTotalAttenuation Nil = 0.0
+getTotalAttenuation trace = foldr (\t -> \n -> (getAtt t * n)) 1.0 trace
+  where
+    getAtt (Absorbtion _ att _) = abs att
+    getAtt (Reflection _ att _) = abs att
+
+getTotalDelay :: List Trace -> Number
+getTotalDelay Nil = 0.0
+getTotalDelay trace = foldr (\t -> \n -> (getDelay t + n)) 0.0 trace
+  where
+    getDelay (Absorbtion d _ _) = d
+    getDelay (Reflection d _ _) = d
+
+
+test :: Effect Unit
+test = do
+  otto <- traverse2 testWorld1
+  log (show otto)
+  log (show $ getTotalAttenuation otto)
+  bob <- x
+  goodBois <- pure $ filter (\xx -> getTotalAttenuation xx > 0.0001) bob
+  log $ (show $ getTotalAttenuation <$> goodBois)
+  log $ (show $ length <$> goodBois)
+  log $ (show $ getTotalDelay <$> goodBois)
+  log $ (show ((toNumber (length goodBois)) / (toNumber count)))
+  where 
+    count = 200
+    x :: Applicative Effect => Unfoldable List => Traversable List => Effect (List Path)
+    x  = replicateA count (traverse2 testWorld1)
+
+
+type Path = List Trace
 
 -- testWorld1 = fromFoldable [ Mic, Medium Air 10.0, Medium Wood 0.005, Medium Air 10.0, Source (pulseGen 0.5 0.05 330.0) ]
-traverse2 :: List Segment -> Effect (List Trace)
+traverse2 :: List Segment -> Effect Path
 traverse2 l = _traverse2 maxBounces Nil l Nil
   where
-  maxBounces = 50
+  maxBounces = 5000
 
   _traverse2 :: Int -> List Segment -> List Segment -> (List Trace) -> Effect (List Trace)
   _traverse2 x _ _ trace
@@ -82,8 +126,7 @@ traverse2 l = _traverse2 maxBounces Nil l Nil
 
       z0 = impedance m0 * dx0
 
-  _traverse2 nn ((Medium m x) : _) (Source _ : Nil) trace = do
-    log ("found source after " <> (show (maxBounces - nn)))
+  _traverse2 _ ((Medium m x) : _) (Source _ : Nil) trace = do
     pure (makeAbsorbtion m x : trace)
 
   _traverse2 _ _ _ _ = pure Nil
@@ -98,7 +141,7 @@ traverse l = do
     Nothing -> do
       pure El.quiet
   where
-  maxBounces = 50
+  maxBounces = 500
 
   _traverse :: Int -> List Segment -> List Segment -> Effect (Maybe El.Node)
   _traverse x _ _
@@ -162,7 +205,7 @@ cutoffFreq :: Number -> Number -> Number
 cutoffFreq x z = (20000.0 * (1.0 - ((pow e) $ (-1.0 / (x * z * z * 0.005)))))
 
 attenuate :: Number -> Number -> Number
-attenuate dx z = (pow e) $ -1.0 * dx * z * 0.001
+attenuate dx z = (pow e) $ -1.0 * dx * z * 0.01
 
 -- ac = absorbtionCoefficient rc
 -- signal goes into a segment
