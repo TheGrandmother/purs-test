@@ -16,7 +16,7 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HV
 import Halogen.VDom.Driver (runUI)
 import Materials (Material(..), impedance)
-import Space (testWorld1, traverse)
+import Space (testWorld1, traverse, traverse2)
 
 main :: Effect Unit
 main =
@@ -24,6 +24,8 @@ main =
     body <- awaitBody
     core <- H.liftEffect El.createCore
     _ <- H.liftEffect $ traverse testWorld1
+    snopp <- H.liftEffect $ traverse2 testWorld1
+    _ <- H.liftEffect $ log (show snopp)
     runUI component core body
 
 type State
