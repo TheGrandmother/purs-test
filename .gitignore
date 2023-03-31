@@ -3,3 +3,6 @@ output/
 .psc-ide-port
 .spago/
 .ipynb_checkpoints/
+index.js
+style.css
+syle.css.map
