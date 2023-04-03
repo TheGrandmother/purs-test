@@ -32,19 +32,28 @@ module El
   , pow
   , getProps
   , quiet
+  , mix
+  , select
   ) where
 
+import Data.Foldable (class Foldable, foldl, length)
 import Data.Function.Uncurried (Fn1, Fn2, Fn3, Fn4, Fn5, runFn1, runFn2, runFn3, runFn4, runFn5)
-import Data.Int (floor)
+import Data.Int (floor, toNumber)
+import Data.Unit (Unit)
 import Effect (Effect)
 import Foreign.Object (Object)
-import Prelude (class Show, show, (*))
+import Prelude (class Show, show, ($), (*), (/))
 
 type Core
   = {}
 
 data Node
   = Void
+
+foreign import _log :: forall a. a -> String
+
+instance showNode :: Show Node where
+  show n = _log n
 
 foreign import createCore :: Effect Core
 
@@ -101,6 +110,8 @@ foreign import __lowpass :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
 foreign import __delay :: forall p1 p2 p3 p4. Fn4 p1 p2 p3 p4 Node
 
 foreign import __sample :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
+
+foreign import __select :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
 
 foreign import sampleRate :: Number
 
@@ -174,5 +185,15 @@ meter name p = runFn2 __meter { name: name } p
 sample :: forall p2 p3. String -> p2 -> p3 -> Node
 sample file gate pitch = runFn3 __sample { path: file } gate pitch
 
+select :: forall p1 p2 p3. p1 -> p2 -> p3 -> Node
+select p1 p2 p3 = runFn3 __select p1 p2 p3
+
 quiet :: Node
 quiet = const "___quiet___" 0.0
+
+mix :: forall f. Foldable f => f Node -> Node
+mix l =
+  let
+    damp = 1.0 / (toNumber $ length l)
+  in
+    mul damp $ foldl (add) (const "_" 0.0) l

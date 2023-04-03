@@ -21,9 +21,6 @@ export const createCore = () => {
   addEventListener('touchstart', contextStarter)
 
   core.on('load', () => {
-
-
-
     console.log(el.tapIn({name: ''}))
   })
   const start = async() => {
@@ -74,6 +71,8 @@ export const renderMono = core => node => () => {core.render(node, node); return
 const ctx = new AudioContext()
 
 export const sampleRate = ctx.sampleRate
+
+export const _log = x => {console.log(x); return ''}
 
 export const play = core => () => {
   window.core = core
