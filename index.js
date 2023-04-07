@@ -753,6 +753,59 @@
   var compare = function(dict) {
     return dict.compare;
   };
+  var max = function(dictOrd) {
+    var compare3 = compare(dictOrd);
+    return function(x) {
+      return function(y) {
+        var v2 = compare3(x)(y);
+        if (v2 instanceof LT) {
+          return y;
+        }
+        ;
+        if (v2 instanceof EQ) {
+          return x;
+        }
+        ;
+        if (v2 instanceof GT) {
+          return x;
+        }
+        ;
+        throw new Error("Failed pattern match at Data.Ord (line 181, column 3 - line 184, column 12): " + [v2.constructor.name]);
+      };
+    };
+  };
+  var min = function(dictOrd) {
+    var compare3 = compare(dictOrd);
+    return function(x) {
+      return function(y) {
+        var v2 = compare3(x)(y);
+        if (v2 instanceof LT) {
+          return x;
+        }
+        ;
+        if (v2 instanceof EQ) {
+          return x;
+        }
+        ;
+        if (v2 instanceof GT) {
+          return y;
+        }
+        ;
+        throw new Error("Failed pattern match at Data.Ord (line 172, column 3 - line 175, column 12): " + [v2.constructor.name]);
+      };
+    };
+  };
+  var clamp = function(dictOrd) {
+    var min1 = min(dictOrd);
+    var max1 = max(dictOrd);
+    return function(low2) {
+      return function(hi) {
+        return function(x) {
+          return min1(hi)(max1(low2)(x));
+        };
+      };
+    };
+  };
 
   // output/Data.Bounded/index.js
   var top = function(dict) {
@@ -1505,7 +1558,7 @@
       var root = EMPTY;
       function kill2(error4, par2, cb2) {
         var step4 = par2;
-        var head3 = null;
+        var head4 = null;
         var tail = null;
         var count = 0;
         var kills2 = {};
@@ -1526,14 +1579,14 @@
                     };
                   });
                 }
-                if (head3 === null) {
+                if (head4 === null) {
                   break loop;
                 }
-                step4 = head3._2;
+                step4 = head4._2;
                 if (tail === null) {
-                  head3 = null;
+                  head4 = null;
                 } else {
-                  head3 = tail._1;
+                  head4 = tail._1;
                   tail = tail._2;
                 }
                 break;
@@ -1542,10 +1595,10 @@
                 break;
               case APPLY:
               case ALT:
-                if (head3) {
-                  tail = new Aff2(CONS, head3, tail);
+                if (head4) {
+                  tail = new Aff2(CONS, head4, tail);
                 }
-                head3 = step4;
+                head4 = step4;
                 step4 = step4._1;
                 break;
             }
@@ -1561,7 +1614,7 @@
         }
         return kills2;
       }
-      function join3(result, head3, tail) {
+      function join3(result, head4, tail) {
         var fail2, step4, lhs, rhs, tmp, kid;
         if (util.isLeft(result)) {
           fail2 = result;
@@ -1579,30 +1632,30 @@
             if (interrupt !== null) {
               return;
             }
-            if (head3 === null) {
+            if (head4 === null) {
               cb(fail2 || step4)();
               return;
             }
-            if (head3._3 !== EMPTY) {
+            if (head4._3 !== EMPTY) {
               return;
             }
-            switch (head3.tag) {
+            switch (head4.tag) {
               case MAP:
                 if (fail2 === null) {
-                  head3._3 = util.right(head3._1(util.fromRight(step4)));
-                  step4 = head3._3;
+                  head4._3 = util.right(head4._1(util.fromRight(step4)));
+                  step4 = head4._3;
                 } else {
-                  head3._3 = fail2;
+                  head4._3 = fail2;
                 }
                 break;
               case APPLY:
-                lhs = head3._1._3;
-                rhs = head3._2._3;
+                lhs = head4._1._3;
+                rhs = head4._2._3;
                 if (fail2) {
-                  head3._3 = fail2;
+                  head4._3 = fail2;
                   tmp = true;
                   kid = killId++;
-                  kills[kid] = kill2(early, fail2 === lhs ? head3._2 : head3._1, function() {
+                  kills[kid] = kill2(early, fail2 === lhs ? head4._2 : head4._1, function() {
                     return function() {
                       delete kills[kid];
                       if (tmp) {
@@ -1622,24 +1675,24 @@
                   return;
                 } else {
                   step4 = util.right(util.fromRight(lhs)(util.fromRight(rhs)));
-                  head3._3 = step4;
+                  head4._3 = step4;
                 }
                 break;
               case ALT:
-                lhs = head3._1._3;
-                rhs = head3._2._3;
+                lhs = head4._1._3;
+                rhs = head4._2._3;
                 if (lhs === EMPTY && util.isLeft(rhs) || rhs === EMPTY && util.isLeft(lhs)) {
                   return;
                 }
                 if (lhs !== EMPTY && util.isLeft(lhs) && rhs !== EMPTY && util.isLeft(rhs)) {
                   fail2 = step4 === lhs ? rhs : lhs;
                   step4 = null;
-                  head3._3 = fail2;
+                  head4._3 = fail2;
                 } else {
-                  head3._3 = step4;
+                  head4._3 = step4;
                   tmp = true;
                   kid = killId++;
-                  kills[kid] = kill2(early, step4 === lhs ? head3._2 : head3._1, function() {
+                  kills[kid] = kill2(early, step4 === lhs ? head4._2 : head4._1, function() {
                     return function() {
                       delete kills[kid];
                       if (tmp) {
@@ -1659,9 +1712,9 @@
                 break;
             }
             if (tail === null) {
-              head3 = null;
+              head4 = null;
             } else {
-              head3 = tail._1;
+              head4 = tail._1;
               tail = tail._2;
             }
           }
@@ -1678,7 +1731,7 @@
       function run3() {
         var status = CONTINUE;
         var step4 = par;
-        var head3 = null;
+        var head4 = null;
         var tail = null;
         var tmp, fid;
         loop:
@@ -1689,31 +1742,31 @@
               case CONTINUE:
                 switch (step4.tag) {
                   case MAP:
-                    if (head3) {
-                      tail = new Aff2(CONS, head3, tail);
+                    if (head4) {
+                      tail = new Aff2(CONS, head4, tail);
                     }
-                    head3 = new Aff2(MAP, step4._1, EMPTY, EMPTY);
+                    head4 = new Aff2(MAP, step4._1, EMPTY, EMPTY);
                     step4 = step4._2;
                     break;
                   case APPLY:
-                    if (head3) {
-                      tail = new Aff2(CONS, head3, tail);
+                    if (head4) {
+                      tail = new Aff2(CONS, head4, tail);
                     }
-                    head3 = new Aff2(APPLY, EMPTY, step4._2, EMPTY);
+                    head4 = new Aff2(APPLY, EMPTY, step4._2, EMPTY);
                     step4 = step4._1;
                     break;
                   case ALT:
-                    if (head3) {
-                      tail = new Aff2(CONS, head3, tail);
+                    if (head4) {
+                      tail = new Aff2(CONS, head4, tail);
                     }
-                    head3 = new Aff2(ALT, EMPTY, step4._2, EMPTY);
+                    head4 = new Aff2(ALT, EMPTY, step4._2, EMPTY);
                     step4 = step4._1;
                     break;
                   default:
                     fid = fiberId++;
                     status = RETURN;
                     tmp = step4;
-                    step4 = new Aff2(FORKED, fid, new Aff2(CONS, head3, tail), EMPTY);
+                    step4 = new Aff2(FORKED, fid, new Aff2(CONS, head4, tail), EMPTY);
                     tmp = Fiber(util, supervisor, tmp);
                     tmp.onComplete({
                       rethrow: false,
@@ -1726,21 +1779,21 @@
                 }
                 break;
               case RETURN:
-                if (head3 === null) {
+                if (head4 === null) {
                   break loop;
                 }
-                if (head3._1 === EMPTY) {
-                  head3._1 = step4;
+                if (head4._1 === EMPTY) {
+                  head4._1 = step4;
                   status = CONTINUE;
-                  step4 = head3._2;
-                  head3._2 = EMPTY;
+                  step4 = head4._2;
+                  head4._2 = EMPTY;
                 } else {
-                  head3._2 = step4;
-                  step4 = head3;
+                  head4._2 = step4;
+                  step4 = head4;
                   if (tail === null) {
-                    head3 = null;
+                    head4 = null;
                   } else {
-                    head3 = tail._1;
+                    head4 = tail._1;
                     tail = tail._2;
                   }
                 }
@@ -1941,6 +1994,22 @@
     };
     return Just2;
   }();
+  var showMaybe = function(dictShow) {
+    var show3 = show(dictShow);
+    return {
+      show: function(v2) {
+        if (v2 instanceof Just) {
+          return "(Just " + (show3(v2.value0) + ")");
+        }
+        ;
+        if (v2 instanceof Nothing) {
+          return "Nothing";
+        }
+        ;
+        throw new Error("Failed pattern match at Data.Maybe (line 223, column 1 - line 225, column 28): " + [v2.constructor.name]);
+      }
+    };
+  };
   var maybe = function(v2) {
     return function(v1) {
       return function(v22) {
@@ -4054,21 +4123,21 @@
     return __train(freq);
   };
   var tapOut = function(dictShow) {
-    var show4 = show(dictShow);
+    var show3 = show(dictShow);
     return function(name15) {
       return function(node) {
         return __tapOut({
           size: 512,
-          name: show4(name15)
+          name: show3(name15)
         }, node);
       };
     };
   };
   var tapIn = function(dictShow) {
-    var show4 = show(dictShow);
+    var show3 = show(dictShow);
     return function(name15) {
       return __tapIn({
-        name: show4(name15)
+        name: show3(name15)
       });
     };
   };
@@ -4624,14 +4693,14 @@
   };
   var append1 = /* @__PURE__ */ append(semigroupList);
   var showList = function(dictShow) {
-    var show4 = show(dictShow);
+    var show3 = show(dictShow);
     return {
       show: function(v2) {
         if (v2 instanceof Nil) {
           return "Nil";
         }
         ;
-        return "(" + (intercalate2(" : ")(map8(show4)(v2)) + " : Nil)");
+        return "(" + (intercalate2(" : ")(map8(show3)(v2)) + " : Nil)");
       }
     };
   };
@@ -4796,6 +4865,17 @@
       return acc + 1 | 0;
     };
   })(0);
+  var head = function(v2) {
+    if (v2 instanceof Nil) {
+      return Nothing.value;
+    }
+    ;
+    if (v2 instanceof Cons) {
+      return new Just(v2.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at Data.List (line 230, column 1 - line 230, column 22): " + [v2.constructor.name]);
+  };
   var fromFoldable = function(dictFoldable) {
     return foldr(dictFoldable)(Cons.create)(Nil.value);
   };
@@ -5728,14 +5808,14 @@
   };
   var replicate2 = typeof Array.prototype.fill === "function" ? replicateFill : replicatePolyfill;
   var fromFoldableImpl = function() {
-    function Cons3(head3, tail) {
-      this.head = head3;
+    function Cons3(head4, tail) {
+      this.head = head4;
       this.tail = tail;
     }
     var emptyList = {};
-    function curryCons(head3) {
+    function curryCons(head4) {
       return function(tail) {
-        return new Cons3(head3, tail);
+        return new Cons3(head4, tail);
       };
     }
     function listToArray(list) {
@@ -8835,6 +8915,60 @@
   var toFixedNative = wrap3(Number.prototype.toFixed);
   var toExponentialNative = wrap3(Number.prototype.toExponential);
 
+  // output/Data.Number.Format/index.js
+  var clamp2 = /* @__PURE__ */ clamp(ordInt);
+  var Precision = /* @__PURE__ */ function() {
+    function Precision2(value0) {
+      this.value0 = value0;
+    }
+    ;
+    Precision2.create = function(value0) {
+      return new Precision2(value0);
+    };
+    return Precision2;
+  }();
+  var Fixed = /* @__PURE__ */ function() {
+    function Fixed2(value0) {
+      this.value0 = value0;
+    }
+    ;
+    Fixed2.create = function(value0) {
+      return new Fixed2(value0);
+    };
+    return Fixed2;
+  }();
+  var Exponential = /* @__PURE__ */ function() {
+    function Exponential2(value0) {
+      this.value0 = value0;
+    }
+    ;
+    Exponential2.create = function(value0) {
+      return new Exponential2(value0);
+    };
+    return Exponential2;
+  }();
+  var toStringWith = function(v2) {
+    if (v2 instanceof Precision) {
+      return toPrecisionNative(v2.value0);
+    }
+    ;
+    if (v2 instanceof Fixed) {
+      return toFixedNative(v2.value0);
+    }
+    ;
+    if (v2 instanceof Exponential) {
+      return toExponentialNative(v2.value0);
+    }
+    ;
+    throw new Error("Failed pattern match at Data.Number.Format (line 59, column 1 - line 59, column 43): " + [v2.constructor.name]);
+  };
+  var precision = /* @__PURE__ */ function() {
+    var $7 = clamp2(1)(21);
+    return function($8) {
+      return Precision.create($7($8));
+    };
+  }();
+
   // output/Effect.Random/foreign.js
   var random = Math.random;
 
@@ -8956,12 +9090,12 @@
 
   // output/Space/index.js
   var tapIn2 = /* @__PURE__ */ tapIn(showString);
+  var add3 = /* @__PURE__ */ add(semiringInt);
   var foldr4 = /* @__PURE__ */ foldr(foldableList);
   var pure9 = /* @__PURE__ */ pure(applicativeEffect);
   var replicateA2 = /* @__PURE__ */ replicateA(applicativeEffect)(unfoldableList)(traversableList);
-  var show2 = /* @__PURE__ */ show(/* @__PURE__ */ showList(showInt));
+  var show2 = /* @__PURE__ */ show(showInt);
   var map18 = /* @__PURE__ */ map(functorList);
-  var show3 = /* @__PURE__ */ show(showInt);
   var mix2 = /* @__PURE__ */ mix(foldableList);
   var Medium = /* @__PURE__ */ function() {
     function Medium2(value0, value1) {
@@ -9028,6 +9162,13 @@
   var testWorld1 = /* @__PURE__ */ function() {
     return fromFoldable(foldableArray)([Mic.value, new Medium(Air.value, 10), new Medium(Wood.value, 5e-3), new Medium(Air.value, 10), new Medium(Wood.value, 0.01), new Medium(Air.value, 40), new Medium(Wood.value, 0.01), new Medium(Air.value, 10), new Source(tapIn2("GRAPH_SOURCE"))]);
   }();
+  var sum2 = function(dictFoldable) {
+    var foldl4 = foldl(dictFoldable);
+    return function(a3) {
+      return foldl4(add3)(0)(a3);
+    };
+  };
+  var sum1 = /* @__PURE__ */ sum2(foldableList);
   var sourceTag = "GRAPH_SOURCE";
   var getTotalAttenuation = function(v2) {
     if (v2 instanceof Nil) {
@@ -9051,6 +9192,23 @@
       };
     })(1)(v2);
   };
+  var fmt = function(x) {
+    return toStringWith(precision(3))(x);
+  };
+  var showInteraction = {
+    show: function(v2) {
+      if (v2 instanceof Absorbtion) {
+        return "Absorb " + (fmt(v2.value0 * 1e3) + ("ms " + (fmt(v2.value1) + ("x " + (fmt(v2.value2) + "hz \n")))));
+      }
+      ;
+      if (v2 instanceof Reflection) {
+        return "Reflect " + (fmt(v2.value0 * 1e3) + ("ms " + (fmt(v2.value1) + ("x " + (fmt(v2.value2) + "hz \n")))));
+      }
+      ;
+      throw new Error("Failed pattern match at Space (line 58, column 1 - line 60, column 115): " + [v2.constructor.name]);
+    }
+  };
+  var show5 = /* @__PURE__ */ show(/* @__PURE__ */ showList(/* @__PURE__ */ showMaybe(showInteraction)));
   var cutoffFreq = function(x) {
     return function(z2) {
       return 2e4 * (1 - pow(e)(-1 / (x * z2 * z2 * 1e-3)));
@@ -9110,8 +9268,8 @@
               }();
               return function __do2() {
                 var pick = random();
-                var $99 = pick < abs(rc);
-                if ($99) {
+                var $106 = pick < abs(rc);
+                if ($106) {
                   return _traverse(v2 - 1 | 0)(new Cons(new Medium(v1.value0.value0, v1.value0.value1), new Cons(new Medium(v22.value0.value0, v22.value0.value1), v22.value1)))(v1.value1)(new Cons(makeReflection(v1.value0.value0)(v1.value0.value1), v3))();
                 }
                 ;
@@ -9135,11 +9293,14 @@
       var _samples = replicateA2(count)(traverse2(world));
       return function __do2() {
         var samples = _samples();
-        log(show2(map18(length4)(samples)))();
-        var graphs = map18(combine)(filter(function(s) {
+        log(show2(length4(samples)))();
+        var completeTraces = filter(function(s) {
           return getTotalAttenuation(s) > 1e-3;
-        })(samples));
-        log(show3(length4(graphs)))();
+        })(samples);
+        log(show5(map18(head)(completeTraces)))();
+        log(show2(sum1(map18(length4)(completeTraces))))();
+        var graphs = map18(combine)(completeTraces);
+        log(show2(length4(graphs)))();
         return mix2(graphs);
       };
     };

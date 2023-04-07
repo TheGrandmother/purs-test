@@ -34,6 +34,8 @@ module El
   , quiet
   , mix
   , select
+  , nodeCount
+  , maxDepth
   ) where
 
 import Data.Foldable (class Foldable, foldl, length)
@@ -116,6 +118,10 @@ foreign import __select :: forall p1 p2 p3. Fn3 p1 p2 p3 Node
 foreign import sampleRate :: Number
 
 foreign import getProps :: forall a. Node -> Object a
+
+foreign import maxDepth :: Node -> Number
+
+foreign import nodeCount :: Node -> Number
 
 highpass :: forall p1 p2 p3. p1 -> p2 -> p3 -> Node
 highpass p1 p2 p3 = runFn3 __highpass p1 p2 p3

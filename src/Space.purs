@@ -1,9 +1,9 @@
 module Space where
 
 import Prelude
-import Data.Foldable (foldr)
+import Data.Foldable (class Foldable, foldl, foldr)
 import Data.Int (toNumber)
-import Data.List (List(..), filter, fromFoldable, length, reverse, (:))
+import Data.List (List(..), filter, fromFoldable, head, length, reverse, (:))
 import Data.Number (abs, e, pow)
 import Data.Number.Format (precision, toStringWith)
 import Data.Traversable (class Traversable)
@@ -92,11 +92,18 @@ combine l = _combine $ reverse l
 
   _combine ((Reflection delay att fc) : crap) = El.sdelay delay $ El.mul att $ El.lowpass fc 1.0 $ combine crap
 
+sum :: forall a. Foldable a => a Int -> Int
+sum a = foldl add 0 a
+
 produceGraph :: List Segment -> Int -> Effect El.Node
 produceGraph world count = do
   samples <- _samples
-  log $ (show $ length <$> samples)
-  graphs <- pure $ combine <$> filter (\s -> getTotalAttenuation s > 0.001) samples
+  -- log $ (show $ length <$> samples)
+  log $ (show $ length samples)
+  completeTraces <- pure $ filter (\s -> getTotalAttenuation s > 0.001) samples
+  log $ (show $ head <$> completeTraces)
+  log $ (show $ sum $ length <$> completeTraces)
+  graphs <- pure $ combine <$> completeTraces
   log $ (show $ length graphs)
   pure $ El.mix graphs
   where
